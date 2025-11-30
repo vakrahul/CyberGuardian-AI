@@ -1,0 +1,695 @@
+// --- VARIABLES ---
+$neon-green: #00ff41;
+$dark-green: #003b00;
+$neon-red: #ff3333;
+$bg-black: #050505;
+$bg-panel: #0a0a0a;
+$font-stack: 'Courier New', Courier, monospace;
+
+body {
+  background-color: $bg-black;
+  color: $neon-green;
+  font-family: $font-stack;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+// --- UTILITIES ---
+.glow-text { text-shadow: 0 0 10px $neon-green; }
+.glow-red { text-shadow: 0 0 10px $neon-red; }
+
+// --- LAYOUT ---
+.cyber-container {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  // BACKGROUND GRID
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02));
+    background-size: 100% 2px, 3px 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
+// --- HEADER ---
+.header {
+  width: 100%; max-width: 800px;
+  border-bottom: 2px solid $dark-green;
+  padding-bottom: 1rem; margin-bottom: 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+
+  h1 { font-size: 2.5rem; margin: 0; letter-spacing: 4px; }
+  
+  .status-badge {
+    border: 1px solid $neon-green;
+    padding: 5px 15px;
+    font-weight: bold;
+    background: rgba(0, 255, 65, 0.1);
+    transition: all 0.3s;
+
+    &.offline {
+      border-color: $neon-red;
+      color: $neon-red;
+      background: rgba(255, 51, 51, 0.1);
+      box-shadow: 0 0 15px $neon-red;
+      animation: flashRed 1s infinite;
+    }
+  }
+}
+
+// --- INPUT PANEL ---
+.input-panel {
+  width: 100%; max-width: 800px;
+  position: relative;
+  
+  textarea {
+    width: 100%; height: 150px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid $dark-green;
+    color: $neon-green;
+    padding: 1rem;
+    font-family: $font-stack;
+    font-size: 1rem;
+    outline: none;
+    
+    &:focus { border-color: $neon-green; box-shadow: 0 0 15px $dark-green; }
+  }
+
+  // THE SCANNING LASER ANIMATION
+  .scanner-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 255, 65, 0.2), transparent);
+    border-bottom: 2px solid $neon-green;
+    animation: scan 1.5s infinite linear;
+    pointer-events: none;
+    display: none;
+
+    &.active { display: block; }
+  }
+}
+
+// --- BUTTON ---
+.scan-btn {
+  margin-top: 1rem; width: 100%; max-width: 800px;
+  padding: 1rem;
+  background: black; border: 1px solid $neon-green;
+  color: $neon-green; font-weight: bold; letter-spacing: 2px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover { background: $neon-green; color: black; }
+  &:disabled { opacity: 0.5; cursor: wait; }
+}
+
+// --- LOADING TEXT ---
+.decoding-text {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: $neon-green;
+  opacity: 0.8;
+}
+
+// --- RESULTS ---
+.results-panel {
+  width: 100%; max-width: 800px;
+  margin-top: 2rem;
+  animation: slideUp 0.5s ease-out;
+
+  .threat-box {
+    border: 2px solid $neon-red;
+    background: rgba(20, 0, 0, 0.8);
+    padding: 1.5rem;
+    position: relative;
+
+    &::before {
+      content: "⚠ THREAT DETECTED";
+      position: absolute; top: -12px; left: 20px;
+      background: $bg-black; color: $neon-red;
+      padding: 0 10px; font-weight: bold;
+    }
+
+    h2 { color: $neon-red; border-bottom: 1px solid $neon-red; padding-bottom: 10px; }
+    
+    .data-row {
+      display: flex; justify-content: space-between;
+      margin: 10px 0;
+      border-bottom: 1px dashed #333;
+      padding-bottom: 5px;
+      
+      .label { color: #666; font-size: 0.8rem; }
+      .value { font-weight: bold; font-size: 1.1rem; }
+      .value.red { color: $neon-red; }
+    }
+
+    .fix-box {
+      margin-top: 15px;
+      background: rgba(255, 0, 0, 0.1);
+      padding: 10px;
+      border-left: 4px solid $neon-red;
+      color: #fff;
+    }
+  }
+  
+  .safe-box {
+    border: 1px solid $neon-green;
+    padding: 2rem;
+    text-align: center;
+    h2 { margin: 0; color: $neon-green; }
+  }
+}
+
+// --- KEYFRAMES ---
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes flashRed {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.cyber-container {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  // BACKGROUND (Keep existing)
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02));
+    background-size: 100% 2px, 3px 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  // --- NEW LAYOUT GRID ---
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Split 50% / 50%
+    gap: 2rem;
+    width: 100%;
+    max-width: 1400px;
+    align-items: start;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr; // Stack vertically on smaller screens
+    }
+  }
+
+  .left-column {
+    position: sticky;
+    top: 2rem;
+    height: 600px;  /* <--- CRITICAL: Must have a height! */
+    width: 100%;
+    border: 1px solid #003b00;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .right-column {
+    width: 100%;
+  }
+}
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+// --- VARIABLES ---
+$neon-green: #24ff00; // Bright HUD Green
+$dim-green: #0a3a00;
+$gold: #ffd700;       // For the 3D model glow/Human
+$bg-black: #020202;
+$panel-bg: rgba(0, 20, 0, 0.6);
+$font-stack: 'Share Tech Mono', monospace;
+
+// --- RESET ---
+* { box-sizing: border-box; }
+body {
+  background-color: $bg-black;
+  color: $neon-green;
+  font-family: $font-stack;
+  margin: 0;
+  overflow: hidden; // Prevent scrollbars for full-screen app feel
+}
+
+// --- UTILITIES ---
+.glow-text { text-shadow: 0 0 5px $neon-green; }
+.panel-title {
+  background: $neon-green;
+  color: black;
+  padding: 2px 10px;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+// --- MAIN CONTAINER ---
+.cyber-wrapper {
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  background-image: 
+    linear-gradient(rgba(0, 20, 0, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 20, 0, 0.7) 1px, transparent 1px);
+  background-size: 40px 40px;
+  position: relative;
+  
+  // CRT Scanline Effect
+  &::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+
+// --- HEADER ---
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid $dim-green;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+
+  h1 { font-size: 2.5rem; margin: 0; letter-spacing: 2px; }
+  span { font-size: 1rem; opacity: 0.8; }
+
+  .nav-deck {
+    display: flex;
+    gap: 15px;
+
+    button {
+      background: transparent;
+      border: 2px solid $neon-green;
+      color: $neon-green;
+      padding: 10px 20px;
+      font-family: $font-stack;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+      box-shadow: 0 0 10px $dim-green;
+
+      span { display: block; font-size: 0.7rem; opacity: 0.6; }
+
+      &:hover {
+        background: $neon-green;
+        color: black;
+        box-shadow: 0 0 20px $neon-green;
+      }
+    }
+  }
+}
+
+// --- MAIN DASHBOARD FRAME ---
+.main-dashboard {
+  border: 2px solid $dim-green;
+  height: calc(100vh - 120px);
+  padding: 20px;
+  position: relative;
+  
+  .frame-label {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: $bg-black;
+    padding: 0 10px;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // 50% Left, 50% Right
+    gap: 20px;
+    height: 100%;
+  }
+}
+
+// --- LEFT PANEL (3D Viewer) ---
+.subject-viewer {
+  border: 1px solid $neon-green;
+  background: $panel-bg;
+  padding: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .model-container {
+    flex-grow: 1;
+    border: 1px solid $dim-green;
+    position: relative;
+    overflow: hidden;
+    
+    // Corner Accents
+    &::before, &::after {
+      content: ""; position: absolute; width: 20px; height: 20px;
+      border: 2px solid $neon-green;
+      transition: 0.3s;
+    }
+    &::before { top: 5px; left: 5px; border-bottom: none; border-right: none; }
+    &::after { bottom: 5px; right: 5px; border-top: none; border-left: none; }
+  }
+}
+
+// --- RIGHT PANEL (Logs & Actions) ---
+.ops-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .logs-container {
+    flex-grow: 1;
+    border: 1px solid $neon-green;
+    background: $panel-bg;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: $neon-green;
+      font-family: $font-stack;
+      font-size: 0.9rem;
+      resize: none;
+      outline: none;
+      
+      &::placeholder { color: $dim-green; }
+    }
+  }
+
+  .action-deck {
+    height: 100px;
+    
+    .scan-btn {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: 2px solid $neon-green;
+      color: $neon-green;
+      font-family: $font-stack;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 15px $dim-green, inset 0 0 20px $dim-green;
+      transition: 0.3s;
+
+      &:hover {
+        background: rgba(36, 255, 0, 0.1);
+        text-shadow: 0 0 10px white;
+        box-shadow: 0 0 30px $neon-green, inset 0 0 30px $neon-green;
+      }
+
+      .integrity {
+        display: block;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+// --- FLOATING WIDGETS ---
+.mission-briefing {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid $neon-green;
+  padding: 10px;
+  font-size: 0.8rem;
+  box-shadow: 10px 10px 0 rgba(0, 255, 0, 0.1);
+  z-index: 10;
+
+  p { margin: 5px 0; color: #ccc; }
+  
+  .progress-bar {
+    height: 5px;
+    background: #333;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    .fill { height: 100%; background: $neon-green; }
+  }
+}
+
+.login-modal {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  background: rgba(0, 20, 0, 0.9);
+  border: 2px solid $neon-green;
+  padding: 20px;
+  z-index: 100;
+  box-shadow: 0 0 50px rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+
+  h3 { margin-top: 0; color: white; border-bottom: 1px solid $dim-green; padding-bottom: 5px; }
+  
+  label { font-size: 0.7rem; color: $neon-green; display: block; margin-top: 10px; }
+  input {
+    width: 100%;
+    background: black;
+    border: 1px solid $neon-green;
+    color: white;
+    padding: 5px;
+    font-family: $font-stack;
+    outline: none;
+    
+    &:focus { box-shadow: 0 0 10px $neon-green; }
+  }
+}
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+$neon-green: #24ff00; 
+$dim-green: #0a3a00;
+$alert-red: #ff3333;
+$bg-black: #020202;
+$panel-bg: rgba(0, 20, 0, 0.6);
+$font-stack: 'Share Tech Mono', monospace;
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: $bg-black;
+  color: $neon-green;
+  font-family: $font-stack;
+  overflow: hidden;
+}
+
+.glow-text { text-shadow: 0 0 5px $neon-green; }
+
+// --- LAYOUT ---
+.cyber-wrapper {
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  background-image: 
+    linear-gradient(rgba(0, 20, 0, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 20, 0, 0.7) 1px, transparent 1px);
+  background-size: 40px 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  
+  &::after {
+    content: " ";
+    position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
+// --- NAVBAR ---
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid $dim-green;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+
+  h1 { font-size: 2.5rem; margin: 0; letter-spacing: 2px; }
+
+  .nav-deck {
+    display: flex;
+    gap: 15px;
+
+    button {
+      background: transparent;
+      border: 2px solid $dim-green;
+      color: $dim-green;
+      padding: 10px 20px;
+      font-family: $font-stack;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &.active, &:hover {
+        border-color: $neon-green;
+        color: $neon-green;
+        box-shadow: 0 0 15px $dim-green;
+        text-shadow: 0 0 5px $neon-green;
+      }
+    }
+  }
+}
+
+// --- PAGES ---
+.page-container {
+  flex-grow: 1;
+  position: relative;
+  border: 2px solid $dim-green;
+  padding: 20px;
+  background: rgba(0, 10, 0, 0.4);
+  overflow-y: auto;
+}
+
+// --- LOGIN PAGE ---
+.login-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  
+  .login-box {
+    width: 400px;
+    padding: 30px;
+    border: 2px solid $neon-green;
+    background: rgba(0, 20, 0, 0.9);
+    box-shadow: 0 0 30px rgba(36, 255, 0, 0.2);
+    
+    h2 { text-align: center; border-bottom: 1px solid $neon-green; padding-bottom: 10px; margin-top: 0; }
+    
+    input {
+      width: 100%;
+      background: black;
+      border: 1px solid $dim-green;
+      color: $neon-green;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-family: $font-stack;
+      font-size: 1.1rem;
+      outline: none;
+      &:focus { border-color: $neon-green; }
+    }
+    
+    button {
+      width: 100%;
+      background: $neon-green;
+      border: none;
+      color: black;
+      font-weight: bold;
+      padding: 15px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      &:hover { background: white; }
+    }
+  }
+}
+
+// --- MISSION DATA TABLE ---
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  
+  th, td { border: 1px solid $dim-green; padding: 10px; text-align: left; }
+  th { background: $dim-green; color: black; font-weight: bold; }
+  tr:hover td { background: rgba(36, 255, 0, 0.1); }
+}
+
+// --- HOME DASHBOARD ---
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: 100%;
+}
+
+.subject-viewer { border: 1px solid $neon-green; background: $panel-bg; padding: 10px; display: flex; flex-direction: column; position: relative; }
+.panel-title { background: $neon-green; color: black; padding: 2px 10px; font-size: 0.9rem; display: inline-block; margin-bottom: 10px; }
+.model-container { flex-grow: 1; border: 1px solid $dim-green; position: relative; }
+.ops-panel { display: flex; flex-direction: column; gap: 20px; }
+.logs-container { flex-grow: 1; border: 1px solid $neon-green; background: $panel-bg; padding: 10px; }
+.logs-container textarea { width: 100%; height: 100%; background: transparent; border: none; color: $neon-green; outline: none; resize: none; font-family: $font-stack;}
+.action-deck button { width: 100%; padding: 20px; background: transparent; border: 2px solid $neon-green; color: $neon-green; font-size: 1.5rem; cursor: pointer; transition: 0.3s; font-family: $font-stack; &:hover { background: rgba(36, 255, 0, 0.1); } }
+.decoding-text { margin-top: 1rem; font-size: 0.9rem; color: $neon-green; opacity: 0.8; }
+.scanner-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent, rgba(0, 255, 65, 0.2), transparent); border-bottom: 2px solid $neon-green; animation: scan 1.5s infinite linear; pointer-events: none; display: none; &.active { display: block; } }
+
+@keyframes scan { 0% { transform: translateY(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(100%); opacity: 0; } }
+// --- MAIN DASHBOARD FRAME ---
+.main-dashboard {
+  border: 2px solid $dim-green;
+  height: calc(100vh - 140px); // Adjusted height to fit better
+  padding: 30px 20px 20px 20px; // Added top padding so content doesn't hit the label
+  position: relative;
+  margin-top: 10px;
+  background: rgba(0, 10, 0, 0.2); // Slight tint inside the main box
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.05); // Subtle glow
+
+  .frame-label {
+    position: absolute;
+    top: -14px; // Moves it up to sit perfectly on the border line
+    left: 30px;
+    background-color: $bg-black; // CRITICAL: This hides the border line behind the text
+    padding: 0 15px; // Adds space around the text
+    color: $neon-green;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    z-index: 10; // Forces it to sit ON TOP of the border
+    border-left: 2px solid $dim-green; // Optional: Adds cool brackets style
+    border-right: 2px solid $dim-green;
+    text-shadow: 0 0 5px $neon-green;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // 50% Left, 50% Right
+    gap: 20px;
+    height: 100%;
+  }
+}

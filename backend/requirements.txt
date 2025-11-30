@@ -1,0 +1,7 @@
+cosdata-sdk
+sentence-transformers
+fastapi
+uvicorn
+python-dotenv
+requests
+numpy
