@@ -13,7 +13,7 @@
 ### The Problem
 Traditional security tools rely on static signatures. If a hacker changes one line of code (e.g., renaming `virus.exe` to `notepad.exe`), they bypass detection. Human analysts are overwhelmed by millions of logs and cannot react fast enough to stop ransomware or data exfiltration in real-time.
 
-### The Solution: CyberGuardian v5.0
+### The Solution: CyberGuardian v1.0
 A **Hybrid Neural Engine** that detects threats based on *behavior* and *context*, not just keywords. It bridges the gap between slow human analysis and instant automated response.
 
 ---
