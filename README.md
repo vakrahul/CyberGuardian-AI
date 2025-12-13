@@ -39,7 +39,10 @@ Open a terminal and run the Cosdata container:
 Bash
 
 docker run -it -p 8443:8443 -p 50051:50051 -v cosdata-data:/opt/cosdata/data cosdataio/cosdata:latest
-🔑 Admin Key: admin123 (Enter this when prompted)
+
+ 
+ # Admin details
+ Admin Key: admin123 
 
 3️⃣ Start the Backend (The Brain)
 
