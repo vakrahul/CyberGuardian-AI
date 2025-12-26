@@ -26,50 +26,39 @@ Database: Cosdata OSS (Dockerized Vector Search).
 
 Security: MITRE ATT&CK Framework Integration.
 ---
-
+```
 ## ⚡ Installation & Setup
 1️⃣ Prerequisites
 Docker Desktop (Must be running)
-
 Node.js & Python 3.10+
-
 2️⃣ Start the Vector Database (The Memory)
 Open a terminal and run the Cosdata container:
 
-Bash
-
 docker run -it -p 8443:8443 -p 50051:50051 -v cosdata-data:/opt/cosdata/data cosdataio/cosdata:latest
-
- 
  # Admin details
  Admin Key: admin123 
-
 3️⃣ Start the Backend (The Brain)
-
 
 Open a new terminal:
 
-Bash
-
 cd backend
 pip install -r requirements.txt
-
+```
 # Load Threat Intelligence (Run once to train the AI)
 python ingest.py
 
 # Start the API Server
 uvicorn main:app --reload
 4️⃣ Start the Frontend (The Interface)
+```
 Open a new terminal:
-
-Bash
 
 ## cd frontend
 ## npm install
 ## npm run dev
 🔐 Access Credentials
 Open your browser at: http://localhost:5173
-
+```
 ## 🧠 System Architecture
 
 We use a **4-Layer Defense** approach to balance speed and intelligence.
